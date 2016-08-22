@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  sensor_msgs
   message_generation
 )
 
@@ -140,6 +141,10 @@ target_link_libraries(myserialpub
  ${catkin_LIBRARIES}
  )
 
+add_executable(pub_imu src/pub_imu.cpp)
+target_link_libraries(pub_imu
+ ${catkin_LIBRARIES}
+ )
 #############
 ## Install ##
 #############
