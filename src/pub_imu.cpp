@@ -134,12 +134,12 @@ int main(int argc, char **argv)
         {
             memcpy(&Pressure, &buf[i+31], 4);
         }
-        printf("ID: %d \r\n", ID);
-        printf("AccRaw: %d %d %d\r\n", AccRaw[0], AccRaw[1], AccRaw[2]);
-        printf("GyoRaw: %d %d %d\r\n", GyoRaw[0], GyoRaw[1], GyoRaw[2]);
-        printf("MagRaw: %d %d %d\r\n", MagRaw[0], MagRaw[1], MagRaw[2]);
-        printf("Angle:    %0.2f %0.2f %0.2f\r\n", Eular[0], Eular[1], Eular[2]);
-        printf("Pressure: %d Pa\r\n\n", Pressure);
+//        printf("ID: %d \r\n", ID);
+//        printf("AccRaw: %d %d %d\r\n", AccRaw[0], AccRaw[1], AccRaw[2]);
+//        printf("GyoRaw: %d %d %d\r\n", GyoRaw[0], GyoRaw[1], GyoRaw[2]);
+//        printf("MagRaw: %d %d %d\r\n", MagRaw[0], MagRaw[1], MagRaw[2]);
+//        printf("Angle:    %0.2f %0.2f %0.2f\r\n", Eular[0], Eular[1], Eular[2]);
+//        printf("Pressure: %d Pa\r\n\n", Pressure);
 
         chatter_pub.publish(imu_msg);
         ros::spinOnce(); // Need to call this function often to allow ROS to process incoming messages

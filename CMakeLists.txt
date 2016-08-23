@@ -145,6 +145,11 @@ add_executable(pub_imu src/pub_imu.cpp)
 target_link_libraries(pub_imu
  ${catkin_LIBRARIES}
  )
+
+add_executable(pub_imu_revised src/pub_imu_revised.cpp)
+target_link_libraries(pub_imu_revised
+ ${catkin_LIBRARIES}
+)
 #############
 ## Install ##
 #############
