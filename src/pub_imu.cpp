@@ -7,6 +7,7 @@
 
 #include "ros/ros.h"
 #include "sensor_msgs/Imu.h"
+#include "tf/transform_broadcaster.h"
 #include <iostream>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
@@ -86,9 +87,9 @@ int main(int argc, char **argv)
         header.frame_id =  "imu_frame";
         imu_msg.header = header;
 
-        /* ������Ĭ������Э������
-        ����
-        0x5A+0xA5+LEN_LOW+LEN_HIGH+CRC_LOW+CRC_HIGH+ 0x90+ID(1�ֽ�) + 0xA0+Acc(���ٶ�6�ֽ�) + 0xB0+Gyo(���ٶ�6�ֽ�) + 0xC0+Mag(�ش�6�ֽ�) + 0xD0 +AtdE(ŷ����6�ֽ�) + 0xF0+Pressure(ѹ��4�ֽ�)
+        /* 按出厂默认输出协议接收
+        输出
+        0x5A+0xA5+LEN_LOW+LEN_HIGH+CRC_LOW+CRC_HIGH+ 0x90+ID(1字节) + 0xA0+Acc(加速度6字节) + 0xB0+Gyo(角速度6字节) + 0xC0+Mag(地磁6字节) + 0xD0 +AtdE(欧拉角6字节) + 0xF0+Pressure(压力4字节)
         */
         i+=6;//moving right 6bit to 0x90
         if(buf[i+0] == kItemID) /* user ID */
@@ -115,6 +116,7 @@ int main(int argc, char **argv)
         if(buf[i+16] == kItemMagRaw)  /* mag raw value */
         {
             memcpy(MagRaw, &buf[i+17], 6);
+            //publish this?
 //            imu_msg. = GyoRaw[0];
         }
 
@@ -123,12 +125,9 @@ int main(int argc, char **argv)
             Eular[0] = ((float)(int16_t)(buf[i+24] + (buf[i+25]<<8)))/100;
             Eular[1] = ((float)(int16_t)(buf[i+26] + (buf[i+27]<<8)))/100;
             Eular[2] = ((float)(int16_t)(buf[i+28] + (buf[i+29]<<8)))/10;
-//            geometry_msgs::Quaternion quat;
-//            quat.
-//            imu_msg.orientation.x = Eular[0];
-//            imu_msg.orientation.y = Eular[0];
-//            imu_msg.orientation.z = Eular[0];
-
+            geometry_msgs::Quaternion quat = tf::createQuaternionMsgFromRollPitchYaw(Eular[0], Eular[1], Eular[2]);
+            imu_msg.orientation = quat;
+//            imu_msg.linear_acceleration_covariance=boost::array<double, 9>
         }
 
         if(buf[i+30] == kItemPressure)
@@ -142,7 +141,7 @@ int main(int argc, char **argv)
         printf("Angle:    %0.2f %0.2f %0.2f\r\n", Eular[0], Eular[1], Eular[2]);
         printf("Pressure: %d Pa\r\n\n", Pressure);
 
-//        chatter_pub.publish(msg);
+        chatter_pub.publish(imu_msg);
         ros::spinOnce(); // Need to call this function often to allow ROS to process incoming messages
         loop_rate.sleep(); // Sleep for the rest of the cycle, to enforce the loop rate
 
